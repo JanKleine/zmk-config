@@ -31,6 +31,14 @@ jobs:
         with:
           name: firmware
           path: firmware
+      - name: Append version to firmware filenames
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          cd firmware
+          for f in *.uf2; do
+            mv -- "$f" "${f%.uf2}-${TAG}.uf2"
+          done
       - env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload "${{ needs.release-please.outputs.tag_name }}" firmware/*.uf2 --repo "$GITHUB_REPOSITORY"
